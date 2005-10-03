@@ -3,7 +3,8 @@
 #	- I think it shuld be daemon so rc-scripts support is needed 
 #	(user pgpool?)
 #
-Summary:	Pgpool is a connection pooling/replication server for PostgreSQL.
+Summary:	Pgpool - a connection pooling/replication server for PostgreSQL
+Summary(pl):	Pgpool - serwer puli po³±czeñ i replikacji dla PostgreSQL-a
 Name:		pgpool
 Version:	2.6.3
 Release:	0.1
@@ -11,12 +12,15 @@ Epoch:		0
 License:	BSD
 Group:		Applications/Databases
 Source0:	http://pgfoundry.org/frs/download.php/426/%{name}-%{version}.tar.gz
-# Source0-md5	
+# Source0-md5:	
 URL:		http://pgfoundry.org/projects/pgpool/
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Pgpool is a connection pooling/replication server for PostgreSQL.
+
+%description -l pl
+Pgpool to serwer puli po³±czeñ i replikacji dla PostgreSQL-a.
 
 %prep
 %setup -q
