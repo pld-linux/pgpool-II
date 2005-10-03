@@ -12,7 +12,7 @@ Epoch:		0
 License:	BSD
 Group:		Applications/Databases
 Source0:	http://pgfoundry.org/frs/download.php/426/%{name}-%{version}.tar.gz
-# Source0-md5:	
+# Source0-md5:	fb301c1f42f67357dd72c9a20042c2ba
 URL:		http://pgfoundry.org/projects/pgpool/
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -46,6 +46,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc README README.euc_jp TODO AUTHORS COPYING INSTALL
+%doc AUTHORS COPYING ChangeLog NEWS README TODO
+%lang(ja) %doc README.euc_jp
 %attr(755,root,root) %{_bindir}/pgpool
 %config(noreplace) %verify(not md5 mtime size)/pgpool.conf
