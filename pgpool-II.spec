@@ -49,4 +49,4 @@ rm -rf $RPM_BUILD_ROOT
 %doc AUTHORS COPYING ChangeLog NEWS README TODO
 %lang(ja) %doc README.euc_jp
 %attr(755,root,root) %{_bindir}/pgpool
-%config(noreplace) %verify(not md5 mtime size)/pgpool.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pgpool.conf
