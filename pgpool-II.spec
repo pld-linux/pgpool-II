@@ -6,13 +6,13 @@
 Summary:	Pgpool - a connection pooling/replication server for PostgreSQL
 Summary(pl):	Pgpool - serwer puli po³±czeñ i replikacji dla PostgreSQL-a
 Name:		pgpool
-Version:	2.6.3
+Version:	3.0.2
 Release:	0.1
 Epoch:		0
 License:	BSD
 Group:		Applications/Databases
-Source0:	http://pgfoundry.org/frs/download.php/426/%{name}-%{version}.tar.gz
-# Source0-md5:	fb301c1f42f67357dd72c9a20042c2ba
+Source0:	http://pgfoundry.org/frs/download.php/899/%{name}-%{version}.tar.gz
+# Source0-md5:	7590ac3673068f020c89efbe9c8cd72e
 URL:		http://pgfoundry.org/projects/pgpool/
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -50,3 +50,4 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %doc README.euc_jp
 %attr(755,root,root) %{_bindir}/pgpool
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pgpool.conf
+%{_mandir}/man8/pgpool.8*
