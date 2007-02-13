@@ -4,7 +4,7 @@
 #	(user pgpool?)
 #
 Summary:	Pgpool - a connection pooling/replication server for PostgreSQL
-Summary(pl.UTF-8):   Pgpool - serwer puli połączeń i replikacji dla PostgreSQL-a
+Summary(pl.UTF-8):	Pgpool - serwer puli połączeń i replikacji dla PostgreSQL-a
 Name:		pgpool
 Version:	3.0.2
 Release:	0.1
