@@ -1,0 +1,27 @@
+check process pgpool with pidfile /var/run/pgpool.pid
+	group pgpool
+	start program = "/etc/rc.d/init.d/pgpool start"
+	stop program = "/etc/rc.d/init.d/pgpool stop"
+	if loadavg(5min) greater than 5 for 8 cycles then restart
+        if failed host 127.0.0.1 port 9999 type tcp then restart
+	if 5 restarts within 5 cycles then timeout
+#	alert 123456@sms on { timeout }
+	depends on pgpool_bin
+	depends on pgpool_rc
+
+check file pgpool_bin with path /usr/sbin/pgpool
+	group pgpool
+	if failed checksum then unmonitor
+	if failed permission 755 then unmonitor
+	if failed uid root then unmonitor
+	if failed gid root then unmonitor
+#	alert root@localhost
+
+check file pgpool_rc with path /etc/rc.d/init.d/pgpool
+	group pgpool
+	if failed checksum then unmonitor
+	if failed permission 754 then unmonitor
+	if failed uid root then unmonitor
+	if failed gid root then unmonitor
+#	alert root@localhost
+

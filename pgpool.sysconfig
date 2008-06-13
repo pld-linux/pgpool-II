@@ -1,0 +1,18 @@
+# Customized settings for pgpool
+#
+PGPOOLUID=pgpool
+PGPOOLGID=pgpool
+#
+PGPOOLCONF=/etc/pgpool.conf
+#
+PGPOOLHBA=/etc/pool_hba.conf
+#
+PGPOOLPID=/var/run/pgpool.pid
+#
+PGPOOLLOG=/var/log/pgpool.log
+# Options for pgpool
+
+# -n: don't run in daemon mode. does not detatch control tty
+# -d: debug mode. lots of debug information will be printed
+#OPTS=" -d -n"
+

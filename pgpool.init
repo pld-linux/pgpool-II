@@ -1,0 +1,112 @@
+#!/bin/sh
+#
+# pgpool	This is the init script for starting up pgpool
+#
+# chkconfig:	345 85 15
+# description:	Pgpool - a connection pooling/replication server for PostgreSQL
+# processname:	pgpool
+# pidfile:	/var/run/pgpool.pid
+# config:	/etc/pgpool.conf
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+# Get service config
+[ -f /etc/sysconfig/pgpool ] && . /etc/sysconfig/pgpool
+
+# Check that networking is up.
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status ]; then
+		msg_network_down pgpool
+		exit 1
+	fi
+else
+	exit 0
+fi
+
+if [ ! -f $PGPOOLLOG ]; then
+	touch $PGPOOLLOG
+fi
+
+
+start() {
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/pgpool ]; then
+		msg_starting pgpool
+		rm -f $PGPOOLPID > /dev/null 2>&1
+		pgpool -f $PGPOOLCONF \
+			-a $PGPOOLHBA \
+			$OPTS >> $PGPOOLLOG 2>&1 #< /dev/null
+		RETVAL=$?
+		pid_num=`pidof -s /usr/bin/pgpool`
+		if [ $pid_num ]; then
+			echo "Master PID number $pid_num" >> $PGPOOLLOG
+			echo -n $pid_num > $PGPOOLPID
+			touch /var/lock/subsys/pgpool
+			ok
+		else
+			RETVAL=1
+			fail
+		fi
+#		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/pgpool
+	else
+		msg_already_running pgpool
+	fi
+}
+
+
+stop() {
+	# Stop daemons.
+	if [ -f /var/lock/subsys/pgpool ]; then
+		msg_stopping pgpool
+		busy
+		/usr/bin/pgpool stop >> $PGPOOLLOG 2>&1
+#		killproc --waitforname pgpool --waitfortime 60 pgpool
+		if [ $? -eq 0 ]; then
+			rm -f /var/lock/subsys/pgpool /var/run/pgpool.pid >/dev/null 2>&1
+			ok
+		else
+			fail
+		fi
+	else
+		msg_not_running pgpool
+	fi
+}
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+  	start
+	;;
+  stop)
+  	stop
+	;;
+  status)
+	status pgpool
+	RETVAL=$?
+	;;
+  restart)
+	stop
+	start
+	;;
+  switch)
+	if [ -f /var/lock/subsys/pgpool ]; then
+		msg_reloading pgpool
+		pgpool switch >> $PGPOOLLOG 2>&1
+		RETVAL=$?
+	else
+		msg_not_running pgpool
+		RETVAL=7
+	fi
+	;;
+  *)
+	msg_usage "$0 {start|stop|restart|switch|status}"
+	exit 3
+	;;
+esac
+
+exit $RETVAL
