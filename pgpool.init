@@ -119,12 +119,12 @@ case "$1" in
 		RETVAL=7
 	fi
 	;;
-  reload)
+  force-reload)
   	force-stop
   	start
   	;;
   *)
-	msg_usage "$0 {start|stop|restart|reload|switch|status}"
+	msg_usage "$0 {start|stop|restart|force-reload|switch|status}"
 	exit 3
 	;;
 esac
