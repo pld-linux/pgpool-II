@@ -64,7 +64,6 @@ stop() {
 		msg_stopping pgpool
 		busy
 		/usr/bin/pgpool stop >> $PGPOOLLOG 2>&1
-#		killproc --waitforname pgpool --waitfortime 60 pgpool
 		if [ $? -eq 0 ]; then
 			rm -f /var/lock/subsys/pgpool /var/run/pgpool.pid >/dev/null 2>&1
 			ok
@@ -74,6 +73,23 @@ stop() {
 	else
 		msg_not_running pgpool
 	fi
+}
+
+force-stop() {
+	# Stop daemons (don't wait)
+	if [ -f /var/lock/subsys/pgpool ]; then
+		msg_stopping pgpool
+		busy
+		/usr/bin/pgpool -m fast stop >> $PGPOOLLOG 2>&1
+		if [ $? -eq 0 ]; then
+			rm -f /var/lock/subsys/pgpool /var/run/pgpool.pid >/dev/null 2>&1
+			ok
+		else
+			fail
+		fi
+	else
+		msg_not_running pgpool
+	fi	
 }
 
 RETVAL=0
@@ -103,8 +119,12 @@ case "$1" in
 		RETVAL=7
 	fi
 	;;
+  reload)
+  	force-stop
+  	start
+  	;;
   *)
-	msg_usage "$0 {start|stop|restart|switch|status}"
+	msg_usage "$0 {start|stop|restart|reload|switch|status}"
 	exit 3
 	;;
 esac
