@@ -80,7 +80,7 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,logrotate.d,monit,pam.d} \
 install pgpool $RPM_BUILD_ROOT%{_bindir}/
 install pgpool.conf.sample   $RPM_BUILD_ROOT%{_sysconfdir}/pgpool.conf
 install pool_hba.conf.sample $RPM_BUILD_ROOT%{_sysconfdir}/pool_hba.conf
-install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
+install %{SOURCE1} $RPM_BUILD_ROOT%{_initrddir}/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/monit/%{name}.monitrc
 install %{SOURCE3} $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/%{name}
 %if %{with pam}
