@@ -1,6 +1,6 @@
 #
 # TODO
-#	- I think it shuld be daemon so rc-scripts support is needed 
+#	- I think it shuld be daemon so rc-scripts support is needed
 #	(user pgpool?) init script must be fixed
 #
 %bcond_without	pam	# don't build with pam support
@@ -29,15 +29,15 @@ Requires(pre):	/usr/sbin/useradd
 %{?with_pam:Requires: pam}
 Requires:	rc-scripts >= 0.2.0
 Provides:	group(pgpool)
-Provides:	user(pgpool)
 Provides:	pgpool
+Provides:	user(pgpool)
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Pgpool is a connection pooling/replication server for PostgreSQL.
 Pgpool runs between PostgreSQL's clients(front ends) and servers
-(backends). A PostgreSQL client can connect to pgpool as if it
-were a standard PostgreSQL server.
+(backends). A PostgreSQL client can connect to pgpool as if it were a
+standard PostgreSQL server.
 
 %description -l pl.UTF-8
 Pgpool to serwer puli połączeń i replikacji dla PostgreSQL-a.
@@ -73,16 +73,16 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,logrotate.d,monit,pam.d} \
 	$RPM_BUILD_ROOT%{_initrddir} \
-        $RPM_BUILD_ROOT%{_sbindir} 
+        $RPM_BUILD_ROOT%{_sbindir}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 install pgpool $RPM_BUILD_ROOT%{_bindir}/
 install pgpool.conf.sample   $RPM_BUILD_ROOT%{_sysconfdir}/pgpool.conf
 install pool_hba.conf.sample $RPM_BUILD_ROOT%{_sysconfdir}/pool_hba.conf
-install %{SOURCE1} $RPM_BUILD_ROOT%{_initrddir}/%{name}
+install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/monit/%{name}.monitrc
-install %{SOURCE3} $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/%{name}
+install %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{name}
 %if %{with pam}
 install pgpool.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/pgpool
 %endif
@@ -118,7 +118,7 @@ fi
 %attr(754,root,root) /etc/rc.d/init.d/pgpool
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pgpool.conf
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pool_hba.conf
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sysconfig/%{name}
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
 %{_mandir}/man8/pgpool.8*
 %if %{with pam}
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/%{name}
