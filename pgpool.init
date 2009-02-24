@@ -14,6 +14,8 @@
 # Get network config
 . /etc/sysconfig/network
 
+PGPOOL_BIN=/usr/bin/pgpool
+
 # Get service config
 [ -f /etc/sysconfig/pgpool ] && . /etc/sysconfig/pgpool
 
@@ -37,11 +39,10 @@ start() {
 	if [ ! -f /var/lock/subsys/pgpool ]; then
 		msg_starting pgpool
 		rm -f $PGPOOLPID > /dev/null 2>&1
-		pgpool -f $PGPOOLCONF \
-			-a $PGPOOLHBA \
-			$OPTS >> $PGPOOLLOG 2>&1 #< /dev/null
+		start-stop-daemon -S -x $PGPOOL_BIN -c $PGPOOLUID:$PGPOOLGID \
+			-- -f $PGPOOLCONF -a $PGPOOLHBA $OPTS >> $PGPOOLLOG 2>&1
 		RETVAL=$?
-		pid_num=`pidof -s /usr/bin/pgpool`
+		pid_num=`pidof -s $PGPOOL_BIN`	# FIXME: this does not restrict the owner
 		if [ $pid_num ]; then
 			echo "Master PID number $pid_num" >> $PGPOOLLOG
 			echo -n $pid_num > $PGPOOLPID
@@ -51,7 +52,7 @@ start() {
 			RETVAL=1
 			fail
 		fi
-#		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/pgpool
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/pgpool
 	else
 		msg_already_running pgpool
 	fi
@@ -63,7 +64,7 @@ stop() {
 	if [ -f /var/lock/subsys/pgpool ]; then
 		msg_stopping pgpool
 		busy
-		/usr/bin/pgpool stop >> $PGPOOLLOG 2>&1
+		$PGPOOL_BIN -f $PGPOOLCONF stop >> $PGPOOLLOG 2>&1
 		if [ $? -eq 0 ]; then
 			rm -f /var/lock/subsys/pgpool /var/run/pgpool.pid >/dev/null 2>&1
 			ok
@@ -80,7 +81,7 @@ force-stop() {
 	if [ -f /var/lock/subsys/pgpool ]; then
 		msg_stopping pgpool
 		busy
-		/usr/bin/pgpool -m fast stop >> $PGPOOLLOG 2>&1
+		$PGPOOL_BIN -m fast stop >> $PGPOOLLOG 2>&1
 		if [ $? -eq 0 ]; then
 			rm -f /var/lock/subsys/pgpool /var/run/pgpool.pid >/dev/null 2>&1
 			ok
