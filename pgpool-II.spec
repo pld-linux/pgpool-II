@@ -1,7 +1,6 @@
 #
 # TODO
-#	- I think it shuld be daemon so rc-scripts support is needed
-#	(user pgpool?) init script must be fixed
+# - logrotate script
 #
 %bcond_without	pam	# don't build with pam support
 #
@@ -9,7 +8,7 @@ Summary:	Pgpool - a connection pooling/replication server for PostgreSQL
 Summary(pl.UTF-8):	Pgpool - serwer puli połączeń i replikacji dla PostgreSQL-a
 Name:		pgpool
 Version:	3.4.1
-Release:	0.1
+Release:	1
 License:	BSD
 Group:		Applications/Databases
 Source0:	http://pgfoundry.org/frs/download.php/1446/%{name}-%{version}.tar.gz
