@@ -71,7 +71,7 @@ CXXFLAGS="${CXXFLAGS:-%{rpmcflags}}" ; export CXXFLAGS
 rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,logrotate.d,monit,pam.d} \
-	$RPM_BUILD_ROOT%{_initrddir} \
+	$RPM_BUILD_ROOT/etc/rc.d/init.d \
         $RPM_BUILD_ROOT%{_sbindir}
 
 %{__make} install \
