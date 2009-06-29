@@ -78,7 +78,7 @@ export CFLAGS CXXFLAGS
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d}}
+install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},%{_varrun}/%{name}}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -129,6 +129,7 @@ fi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pool_hba.conf
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{relname}
 %{_mandir}/man8/pgpool.8*
+%dir %attr(775,root,pgpool) %{_varrun}/%{name}
 %if %{with pam}
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/pgpool
 %endif

@@ -5,7 +5,7 @@
 # chkconfig:	345 85 15
 # description:	Pgpool - a connection pooling/replication server for PostgreSQL
 # processname:	pgpool
-# pidfile:	/var/run/pgpool.pid
+# pidfile:	/var/run/pgpool/pgpool.pid
 # config:	/etc/pgpool.conf
 
 # Source function library
@@ -38,21 +38,16 @@ start() {
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/pgpool ]; then
 		msg_starting pgpool
-		rm -f $PGPOOLPID > /dev/null 2>&1
-		start-stop-daemon -S -x $PGPOOL_BIN -c $PGPOOLUID:$PGPOOLGID \
+		busy
+		start-stop-daemon -S -x $PGPOOL_BIN -c $PGPOOLUID:$PGPOOLGID -p /var/run/pgpool/pgpool.pid \
 			-- -f $PGPOOLCONF -a $PGPOOLHBA $OPTS >> $PGPOOLLOG 2>&1
 		RETVAL=$?
-		pid_num=`pidof -s $PGPOOL_BIN`	# FIXME: this does not restrict the owner
-		if [ $pid_num ]; then
-			echo "Master PID number $pid_num" >> $PGPOOLLOG
-			echo -n $pid_num > $PGPOOLPID
+		if [ $RETVAL -eq 0 ]; then
 			touch /var/lock/subsys/pgpool
 			ok
 		else
-			RETVAL=1
 			fail
 		fi
-		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/pgpool
 	else
 		msg_already_running pgpool
 	fi
@@ -66,11 +61,12 @@ stop() {
 		busy
 		$PGPOOL_BIN -f $PGPOOLCONF stop >> $PGPOOLLOG 2>&1
 		if [ $? -eq 0 ]; then
-			rm -f /var/lock/subsys/pgpool /var/run/pgpool.pid >/dev/null 2>&1
+			rm -f /var/run/pgpool/pgpool.pid >/dev/null 2>&1
 			ok
 		else
 			fail
 		fi
+		rm -f /var/lock/subsys/pgpool
 	else
 		msg_not_running pgpool
 	fi
@@ -90,17 +86,17 @@ force-stop() {
 		fi
 	else
 		msg_not_running pgpool
-	fi	
+	fi
 }
 
 RETVAL=0
 # See how we were called.
 case "$1" in
   start)
-  	start
+	start
 	;;
   stop)
-  	stop
+	stop
 	;;
   status)
 	status pgpool
@@ -121,9 +117,9 @@ case "$1" in
 	fi
 	;;
   force-reload)
-  	force-stop
-  	start
-  	;;
+	force-stop
+	start
+	;;
   *)
 	msg_usage "$0 {start|stop|restart|force-reload|switch|status}"
 	exit 3
