@@ -1,22 +1,25 @@
 #
 # TODO
 # - logrotate script
+# - libpcp devel subpackage?
 #
 %bcond_without	pam	# don't build with pam support
 #
+%define		relname	pgpool
+#
 Summary:	Pgpool - a connection pooling/replication server for PostgreSQL
 Summary(pl.UTF-8):	Pgpool - serwer puli połączeń i replikacji dla PostgreSQL-a
-Name:		pgpool
-Version:	3.4.1
+Name:		pgpool-II
+Version:	2.2.2
 Release:	1
 License:	BSD
 Group:		Applications/Databases
-Source0:	http://pgfoundry.org/frs/download.php/1446/%{name}-%{version}.tar.gz
-# Source0-md5:	1f876237923be8095ed6fb30885a416a
-Source1:	%{name}.init
-Source2:	%{name}.monitrc
-Source3:	%{name}.sysconfig
-URL:		http://pgfoundry.org/projects/pgpool/
+Source0:	http://pgfoundry.org/frs/download.php/2191/%{name}-%{version}.tar.gz
+# Source0-md5:	6f14514ed4ed5368ad3ab7e2d4c5136b
+Source1:	%{relname}.init
+Source2:	%{relname}.monitrc
+Source3:	%{relname}.sysconfig
+URL:		http://pgpool.projects.postgresql.org/
 %{?with_pam:BuildRequires: pam-devel}
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
@@ -28,8 +31,9 @@ Requires(pre):	/usr/sbin/useradd
 %{?with_pam:Requires: pam}
 Requires:	rc-scripts >= 0.2.0
 Provides:	group(pgpool)
-Provides:	pgpool
 Provides:	user(pgpool)
+Provides:	pgpool
+Obsoletes:	pgpool
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -61,7 +65,7 @@ CFLAGS="${CFLAGS:-%{rpmcflags}}" ; export CFLAGS
 CXXFLAGS="${CXXFLAGS:-%{rpmcflags}}" ; export CXXFLAGS
 
 %configure \
-	--bindir %{_bindir} \
+	--bindir=%{_bindir} \
 	%{?with_pam:--with-pam} \
 	--sysconfdir=%{_sysconfdir}
 
@@ -70,59 +74,61 @@ CXXFLAGS="${CXXFLAGS:-%{rpmcflags}}" ; export CXXFLAGS
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,logrotate.d,monit,pam.d} \
-	$RPM_BUILD_ROOT/etc/rc.d/init.d \
-        $RPM_BUILD_ROOT%{_sbindir}
+install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d}}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-install pgpool $RPM_BUILD_ROOT%{_bindir}/
-install pgpool.conf.sample   $RPM_BUILD_ROOT%{_sysconfdir}/pgpool.conf
-install pool_hba.conf.sample $RPM_BUILD_ROOT%{_sysconfdir}/pool_hba.conf
-install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
-install %{SOURCE2} $RPM_BUILD_ROOT/etc/monit/%{name}.monitrc
-install %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{name}
+
+mv -f $RPM_BUILD_ROOT%{_sysconfdir}/pcp.conf{.sample,}
+mv -f $RPM_BUILD_ROOT%{_sysconfdir}/pgpool.conf{.sample,}
+mv -f $RPM_BUILD_ROOT%{_sysconfdir}/pool_hba.conf{.sample,}
+install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{relname}
+install %{SOURCE2} $RPM_BUILD_ROOT/etc/monit/%{relname}.monitrc
+install %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{relname}
 %if %{with pam}
-install pgpool.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/pgpool
+install sample/pgpool.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/pgpool
 %endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-%groupadd -r -g 240 %{name}
-%useradd -r -u 240 -d /usr/share/empty -s /bin/false -c "Pgpool User" -g %{name} %{name}
+%groupadd -r -g 240 pgpool
+%useradd -r -u 240 -d /usr/share/empty -s /bin/false -c "Pgpool User" -g pgpool pgpool
 
 %post
-/sbin/chkconfig --add %{name}
-%service %{name} restart
+/sbin/chkconfig --add %{relname}
+%service %{relname} restart
 
 %preun
 if [ "$1" = "0" ]; then
-	%service %{name} stop
-	/sbin/chkconfig --del %{name}
+	%service %{relname} stop
+	/sbin/chkconfig --del %{relname}
 fi
 
 %postun
 if [ "$1" = "0" ]; then
-	%userremove %{name}
-	%groupremove %{name}
+	%userremove pgpool
+	%groupremove pgpool
 fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS COPYING ChangeLog NEWS README TODO pgpool.conf.sample pool_hba.conf.sample
+%doc AUTHORS COPYING ChangeLog NEWS TODO doc sample sql
 %lang(ja) %doc README.euc_jp
-%attr(755,root,root) %{_bindir}/pgpool
-%attr(754,root,root) /etc/rc.d/init.d/pgpool
+%attr(755,root,root) %{_bindir}/pcp_*
+%attr(755,root,root) %{_bindir}/pg*
+%attr(755,root,root) %{_libdir}/libpcp.so.*
+%attr(754,root,root) /etc/rc.d/init.d/%{relname}
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pcp.conf
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pgpool.conf
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pool_hba.conf
-%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{relname}
 %{_mandir}/man8/pgpool.8*
 %if %{with pam}
-%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/%{name}
+%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/pgpool
 %endif
 
 %files -n monit-rc-pgpool
 %defattr(644,root,root,755)
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/monit/%{name}.monitrc
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/monit/%{relname}.monitrc
