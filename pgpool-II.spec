@@ -45,18 +45,19 @@ standard PostgreSQL server.
 %description -l pl.UTF-8
 Pgpool to serwer puli połączeń i replikacji dla PostgreSQL-a.
 
-%package -n monit-rc-pgpool
+%package -n monit-rc-pgpool-II
 Summary:	pgpool support for monit
-Summary(pl.UTF-8):	wsparcie pgpool dla monit
+Summary(pl.UTF-8):	Wsparcie pgpool dla monit
 Group:		Applications/System
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}
 Requires:	monit
+Obsoletes:	monit-rc-pgpool
 
-%description -n monit-rc-pgpool
+%description -n monit-rc-pgpool-II
 monitrc file for pgpool monitoring.
 
-%description -n monit-rc-pgpool -l pl.UTF-8
-plik monitrc do monitorowania pgpool.
+%description -n monit-rc-pgpool-II -l pl.UTF-8
+Plik monitrc do monitorowania pgpool.
 
 %prep
 %setup -q
@@ -129,6 +130,6 @@ fi
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/pgpool
 %endif
 
-%files -n monit-rc-pgpool
+%files -n monit-rc-pgpool-II
 %defattr(644,root,root,755)
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/monit/%{relname}.monitrc
