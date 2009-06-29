@@ -20,6 +20,7 @@ Source1:	%{relname}.init
 Source2:	%{relname}.monitrc
 Source3:	%{relname}.sysconfig
 URL:		http://pgpool.projects.postgresql.org/
+BuildRequires:	postgresql-devel
 %{?with_pam:BuildRequires: pam-devel}
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
