@@ -21,7 +21,8 @@ Source2:	%{relname}.monitrc
 Source3:	%{relname}.sysconfig
 URL:		http://pgpool.projects.postgresql.org/
 BuildRequires:	postgresql-devel
-%{?with_pam:BuildRequires: pam-devel}
+%{?with_pam:BuildRequires:	pam-devel}
+BuildRequires:	sed >= 4.0
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
@@ -29,7 +30,7 @@ Requires(pre):	/bin/id
 Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
-%{?with_pam:Requires: pam}
+%{?with_pam:Requires:	pam}
 Requires:	rc-scripts >= 0.2.0
 Provides:	group(pgpool)
 Provides:	user(pgpool)
@@ -63,6 +64,8 @@ Plik monitrc do monitorowania pgpool.
 %prep
 %setup -q
 
+sed -i -e "/socket/ s| = '/tmp'| = '/var/run/pgpool'|" pgpool.conf.sample
+
 %build
 CFLAGS="%{rpmcflags}"
 CXXFLAGS="%{rpmcflags}"
@@ -78,7 +81,7 @@ export CFLAGS CXXFLAGS
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},%{_varrun}/%{name}}
+install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},%{_varrun}/pgpool}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -129,7 +132,7 @@ fi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pool_hba.conf
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{relname}
 %{_mandir}/man8/pgpool.8*
-%dir %attr(775,root,pgpool) %{_varrun}/%{name}
+%dir %attr(775,root,pgpool) %{_varrun}/pgpool
 %if %{with pam}
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/pgpool
 %endif
