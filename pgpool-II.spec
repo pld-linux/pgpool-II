@@ -61,9 +61,11 @@ Plik monitrc do monitorowania pgpool.
 
 %prep
 %setup -q
+
 %build
-CFLAGS="${CFLAGS:-%{rpmcflags}}" ; export CFLAGS
-CXXFLAGS="${CXXFLAGS:-%{rpmcflags}}" ; export CXXFLAGS
+CFLAGS="%{rpmcflags}"
+CXXFLAGS="%{rpmcflags}"
+export CFLAGS CXXFLAGS
 
 %configure \
 	--bindir=%{_bindir} \
