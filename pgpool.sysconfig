@@ -1,18 +1,16 @@
 # Customized settings for pgpool
-#
+
+# run as user:group
 PGPOOLUID=pgpool
 PGPOOLGID=pgpool
-#
+
+# these are default locations (as well as /etc/pcp.conf)
 PGPOOLCONF=/etc/pgpool.conf
-#
 PGPOOLHBA=/etc/pool_hba.conf
-#
-PGPOOLPID=/var/run/pgpool.pid
-#
+
 PGPOOLLOG=/var/log/pgpool.log
+
 # Options for pgpool
-
-# -n: don't run in daemon mode. does not detatch control tty
-# -d: debug mode. lots of debug information will be printed
+# -n: don't run in daemon mode; does not detach control TTY
+# -d: debug mode; lots of debug information will be printed
 #OPTS=" -d -n"
-
