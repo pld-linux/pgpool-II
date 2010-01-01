@@ -36,7 +36,7 @@ Provides:	group(pgpool)
 Provides:	user(pgpool)
 Provides:	pgpool
 Obsoletes:	pgpool
-Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Pgpool is a connection pooling/replication server for PostgreSQL.
