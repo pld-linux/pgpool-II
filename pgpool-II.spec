@@ -24,9 +24,9 @@ Source4:	%{relname}.tmpfiles
 Patch0:		%{name}-libs.patch
 URL:		http://www.pgpool.net/
 %{?with_openssl:BuildRequires:	openssl-devel}
+%{?with_pam:BuildRequires:	pam-devel}
 BuildRequires:	postgresql-devel
 BuildRequires:	postgresql-static
-%{?with_pam:BuildRequires:	pam-devel}
 BuildRequires:	sed >= 4.0
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
@@ -38,8 +38,8 @@ Requires(pre):	/usr/sbin/useradd
 %{?with_pam:Requires:	pam}
 Requires:	rc-scripts >= 0.2.0
 Provides:	group(pgpool)
-Provides:	user(pgpool)
 Provides:	pgpool
+Provides:	user(pgpool)
 Obsoletes:	pgpool
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -52,9 +52,9 @@ standard PostgreSQL server.
 SSL support: %{?with_openssl:en}%{!?with_openssl:dis}abled
 
 %description -l pl.UTF-8
-Pgpool to serwer puli połączeń i replikacji dla PostgreSQL-a.
-Pgpool działa pomięzy klientami a serwerami PostgreSQL, umożliwiając
-klientom połaczenie się do pgool tak jakby to był serwer PostgreSQL.
+Pgpool to serwer puli połączeń i replikacji dla PostgreSQL-a. Pgpool
+działa pomięzy klientami a serwerami PostgreSQL, umożliwiając klientom
+połaczenie się do pgool tak jakby to był serwer PostgreSQL.
 
 Wsparcie SSL: w%{!?with_openssl:y}łączone
 
@@ -100,7 +100,7 @@ export CFLAGS CXXFLAGS
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},%{_varrun}/pgpool,/usr/lib/tmpfiles.d}
+install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},%{_varrun}/pgpool,%{systemdtmpfilesdir}}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -109,9 +109,9 @@ mv -f $RPM_BUILD_ROOT%{_sysconfdir}/pcp.conf{.sample,}
 mv -f $RPM_BUILD_ROOT%{_sysconfdir}/pgpool.conf{.sample,}
 mv -f $RPM_BUILD_ROOT%{_sysconfdir}/pool_hba.conf{.sample,}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{relname}
-install %{SOURCE2} $RPM_BUILD_ROOT/etc/monit/%{relname}.monitrc
+install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/monit/%{relname}.monitrc
 install %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{relname}
-install %{SOURCE4} $RPM_BUILD_ROOT/usr/lib/tmpfiles.d/%{relname}.conf
+install %{SOURCE4} $RPM_BUILD_ROOT%{systemdtmpfilesdir}/%{relname}.conf
 %if %{with pam}
 install src/sample/pgpool.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/pgpool
 %endif
@@ -154,11 +154,11 @@ fi
 %{_datadir}/%{name}
 %{_includedir}/*
 %dir %attr(775,root,pgpool) %{_varrun}/pgpool
-/usr/lib/tmpfiles.d/%{relname}.conf
+%{systemdtmpfilesdir}/%{relname}.conf
 %if %{with pam}
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/pgpool
 %endif
 
 %files -n monit-rc-pgpool-II
 %defattr(644,root,root,755)
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/monit/%{relname}.monitrc
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/monit/%{relname}.monitrc
