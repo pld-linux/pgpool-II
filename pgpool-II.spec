@@ -10,16 +10,18 @@
 Summary:	Pgpool - a connection pooling/replication server for PostgreSQL
 Summary(pl.UTF-8):	Pgpool - serwer puli połączeń i replikacji dla PostgreSQL-a
 Name:		pgpool-II
-Version:	3.1
-Release:	1
+Version:	3.4.2
+Release:	0.1
 License:	BSD
 Group:		Applications/Databases
-Source0:	http://pgfoundry.org/frs/download.php/3114/%{name}-%{version}.tar.gz
-# Source0-md5:	dbb591a8aa3c3bd1e689f41a7638b9ee
+Source0:	http://www.pgpool.net/mediawiki/images/%{name}-%{version}.tar.gz
+# Source0-md5:	a2872b2ff70b2530b324b3bab86d0eb3
 Source1:	%{relname}.init
 Source2:	%{relname}.monitrc
 Source3:	%{relname}.sysconfig
-URL:		http://pgpool.projects.postgresql.org/
+Source4:	%{relname}.tmpfiles
+Patch0:		%{name}-libs.patch
+URL:		http://www.pgpool.net/
 BuildRequires:	postgresql-devel
 %{?with_pam:BuildRequires:	pam-devel}
 BuildRequires:	sed >= 4.0
@@ -63,10 +65,17 @@ Plik monitrc do monitorowania pgpool.
 
 %prep
 %setup -q
+%patch0 -p1
 
-sed -i -e "/socket/ s| = '/tmp'| = '/var/run/pgpool'|" pgpool.conf.sample
+sed -i -e "/socket/ s| = '/tmp'| = '/var/run/pgpool'|" src/sample/pgpool.conf.sample
 
 %build
+%{__libtoolize}
+%{__aclocal}
+%{__autoconf}
+%{__autoheader}
+%{__automake}
+
 CFLAGS="%{rpmcflags}"
 CXXFLAGS="%{rpmcflags}"
 export CFLAGS CXXFLAGS
@@ -81,7 +90,7 @@ export CFLAGS CXXFLAGS
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},%{_varrun}/pgpool}
+install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},%{_varrun}/pgpool,/usr/lib/tmpfiles.d}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -92,8 +101,9 @@ mv -f $RPM_BUILD_ROOT%{_sysconfdir}/pool_hba.conf{.sample,}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{relname}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/monit/%{relname}.monitrc
 install %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{relname}
+install %{SOURCE4} $RPM_BUILD_ROOT/usr/lib/tmpfiles.d/%{relname}.conf
 %if %{with pam}
-install sample/pgpool.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/pgpool
+install src/sample/pgpool.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/pgpool
 %endif
 
 %clean
@@ -121,8 +131,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS COPYING ChangeLog NEWS TODO doc sample sql
-%lang(ja) %doc README.euc_jp
+%doc AUTHORS COPYING ChangeLog NEWS README TODO doc src/sample src/sql
 %attr(755,root,root) %{_bindir}/pcp_*
 %attr(755,root,root) %{_bindir}/pg*
 %attr(755,root,root) %{_libdir}/libpcp.so.*
@@ -132,7 +141,10 @@ fi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pool_hba.conf
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{relname}
 %{_mandir}/man8/pgpool.8*
+%{_datadir}/%{name}
+%{_includedir}/*
 %dir %attr(775,root,pgpool) %{_varrun}/pgpool
+/usr/lib/tmpfiles.d/%{relname}.conf
 %if %{with pam}
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/pgpool
 %endif
