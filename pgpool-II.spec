@@ -49,8 +49,14 @@ Pgpool runs between PostgreSQL's clients(front ends) and servers
 (backends). A PostgreSQL client can connect to pgpool as if it were a
 standard PostgreSQL server.
 
+SSL support: %{?with_openssl:en}%{!?with_openssl:dis}abled
+
 %description -l pl.UTF-8
 Pgpool to serwer puli połączeń i replikacji dla PostgreSQL-a.
+Pgpool działa pomięzy klientami a serwerami PostgreSQL, umożliwiając
+klientom połaczenie się do pgool tak jakby to był serwer PostgreSQL.
+
+Wsparcie SSL: w%{!?with_openssl:y}łączone
 
 %package -n monit-rc-pgpool-II
 Summary:	pgpool support for monit
