@@ -3,6 +3,7 @@
 # - logrotate script
 # - libpcp devel subpackage?
 #
+%bcond_without	openssl	# build without SSL support
 %bcond_without	pam	# don't build with pam support
 #
 %define		relname	pgpool
@@ -22,6 +23,7 @@ Source3:	%{relname}.sysconfig
 Source4:	%{relname}.tmpfiles
 Patch0:		%{name}-libs.patch
 URL:		http://www.pgpool.net/
+%{?with_openssl:BuildRequires:	openssl-devel}
 BuildRequires:	postgresql-devel
 %{?with_pam:BuildRequires:	pam-devel}
 BuildRequires:	sed >= 4.0
@@ -82,6 +84,7 @@ export CFLAGS CXXFLAGS
 
 %configure \
 	--bindir=%{_bindir} \
+	%{?with_openssl:--with-openssl} \
 	%{?with_pam:--with-pam} \
 	--sysconfdir=%{_sysconfdir}
 
