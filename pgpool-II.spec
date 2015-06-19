@@ -25,6 +25,7 @@ Patch0:		%{name}-libs.patch
 URL:		http://www.pgpool.net/
 %{?with_openssl:BuildRequires:	openssl-devel}
 BuildRequires:	postgresql-devel
+BuildRequires:	postgresql-static
 %{?with_pam:BuildRequires:	pam-devel}
 BuildRequires:	sed >= 4.0
 Requires(post,preun):	/sbin/chkconfig
