@@ -76,8 +76,6 @@ Plik monitrc do monitorowania pgpool.
 %setup -q
 %patch0 -p1
 
-sed -i -e "/socket/ s| = '/tmp'| = '/var/run/pgpool'|" src/sample/pgpool.conf.sample
-
 %build
 %{__libtoolize}
 %{__aclocal}
