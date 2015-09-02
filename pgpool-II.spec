@@ -107,7 +107,7 @@ mv -f $RPM_BUILD_ROOT%{_sysconfdir}/pcp.conf{.sample,}
 mv -f $RPM_BUILD_ROOT%{_sysconfdir}/pgpool.conf{.sample,}
 mv -f $RPM_BUILD_ROOT%{_sysconfdir}/pool_hba.conf{.sample,}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{relname}
-install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/monit/%{relname}.monitrc
+install %{SOURCE2} $RPM_BUILD_ROOT/etc/monit/%{relname}.monitrc
 install %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{relname}
 install %{SOURCE4} $RPM_BUILD_ROOT%{systemdtmpfilesdir}/%{relname}.conf
 %if %{with pam}
@@ -159,4 +159,4 @@ fi
 
 %files -n monit-rc-pgpool-II
 %defattr(644,root,root,755)
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/monit/%{relname}.monitrc
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/monit/%{relname}.monitrc
