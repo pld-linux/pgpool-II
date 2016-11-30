@@ -1,6 +1,6 @@
 #
 # TODO
-# - logrotate script
+# - logrotate script (note not needed under systemd: logs go to journal)
 #
 %bcond_without	openssl	# build without SSL support
 %bcond_without	pam	# don't build with pam support
@@ -20,11 +20,13 @@ Source1:	%{relname}.init
 Source2:	%{relname}.monitrc
 Source3:	%{relname}.sysconfig
 Source4:	%{relname}.tmpfiles
+Source5:	%{relname}.service
 URL:		http://www.pgpool.net/
 %{?with_openssl:BuildRequires:	openssl-devel}
 %{?with_pam:BuildRequires:	pam-devel}
 BuildRequires:	postgresql-devel
 BuildRequires:	sed >= 4.0
+BuildRequires:	rpmbuild(macros) >= 1.671
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
@@ -35,6 +37,7 @@ Requires(pre):	/usr/sbin/useradd
 Requires:	%{name}-libs = %{version}-%{release}
 %{?with_pam:Requires:	pam}
 Requires:	rc-scripts >= 0.2.0
+Requires:	systemd-units >= 38
 Provides:	group(pgpool)
 Provides:	pgpool
 Provides:	user(pgpool)
@@ -130,7 +133,7 @@ export CFLAGS CXXFLAGS
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},%{_varrun}/pgpool,%{systemdtmpfilesdir},%{_mandir}/man{1,8},/var/log/pgpool}
+install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},%{_varrun}/pgpool,%{systemdtmpfilesdir},%{_mandir}/man{1,8},/var/log/pgpool,%{systemdunitdir}}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -142,6 +145,7 @@ cp -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{relname}
 cp -p %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/monit/%{relname}.monitrc
 cp -p %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{relname}
 cp -p %{SOURCE4} $RPM_BUILD_ROOT%{systemdtmpfilesdir}/%{relname}.conf
+cp -p %{SOURCE5} $RPM_BUILD_ROOT%{systemdunitdir}/%{relname}.service
 %if %{with pam}
 cp -p src/sample/pgpool.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/pgpool
 %endif
@@ -168,18 +172,21 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/chkconfig --add %{relname}
 %service %{relname} restart
+%systemd_post %{relname}.service
 
 %preun
 if [ "$1" = "0" ]; then
 	%service %{relname} stop
 	/sbin/chkconfig --del %{relname}
 fi
+%systemd_preun %{relname}.service
 
 %postun
 if [ "$1" = "0" ]; then
 	%userremove pgpool
 	%groupremove pgpool
 fi
+%systemd_reload
 
 %post libs -p /sbin/ldconfig
 
@@ -200,6 +207,7 @@ fi
 %{_datadir}/%{name}
 %dir %attr(775,root,pgpool) %{_varrun}/pgpool
 %{systemdtmpfilesdir}/%{relname}.conf
+%{systemdunitdir}/%{relname}.service
 %if %{with pam}
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/pgpool
 %endif

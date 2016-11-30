@@ -10,6 +10,8 @@ PGPOOLHBA=/etc/pool_hba.conf
 
 PGPOOLLOG=/var/log/pgpool.log
 
+SHUTDOWN_MODE=smart
+
 # Options for pgpool
 # -n: don't run in daemon mode; does not detach control TTY
 # -d: debug mode; lots of debug information will be printed

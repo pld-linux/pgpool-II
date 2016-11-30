@@ -1,0 +1,17 @@
+[Unit]
+Description=Pgpool - a connection pooling/replication server for PostgreSQL
+After=network.target
+
+[Service]
+Type=forking
+Environment=PGPOOLCONF=/etc/pgpool.conf PGPOOLHBA=/etc/pool_hba.conf SHUTDOWN_MODE=smart
+EnvironmentFile=-/etc/sysconfig/pgpool
+ExecStart=/usr/bin/pgpool -f ${PGPOOLCONF} -a ${PGPOOLHBA} $OPTS
+ExecStop=/usr/bin/pgpool -f ${PGPOOLCONF} -m ${SHUTDOWN_MODE} stop
+ExecReload=/usr/bin/pgpool -f ${PGPOOLCONF} reload
+PIDFile=/var/run/pgpool/pgpool.pid
+User=pgpool
+Group=pgpool
+
+[Install]
+WantedBy=multi-user.target

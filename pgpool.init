@@ -15,6 +15,12 @@
 . /etc/sysconfig/network
 
 PGPOOL_BIN=/usr/bin/pgpool
+PGPOOLUID=pgpool
+PGPOOLGID=pgpool
+PGPOOLCONF=/etc/pgpool.conf
+PGPOOLHBA=/etc/pool_hba.conf
+PGPOOLLOG=/var/log/pgpool.log
+SHUTDOWN_MODE=smart
 
 # Get service config
 [ -f /etc/sysconfig/pgpool ] && . /etc/sysconfig/pgpool
@@ -59,7 +65,7 @@ stop() {
 	if [ -f /var/lock/subsys/pgpool ]; then
 		msg_stopping pgpool
 		busy
-		output=$($PGPOOL_BIN -f "$PGPOOLCONF" stop 2>&1)
+		output=$($PGPOOL_BIN -f "$PGPOOLCONF" -m "$SHUTDOWN_MODE" stop 2>&1)
 		if [ $? -eq 0 ]; then
 			rm -f /var/run/pgpool/pgpool.pid >/dev/null 2>&1
 			ok
