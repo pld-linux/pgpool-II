@@ -8,8 +8,6 @@ PGPOOLGID=pgpool
 PGPOOLCONF=/etc/pgpool.conf
 PGPOOLHBA=/etc/pool_hba.conf
 
-PGPOOLLOG=/var/log/pgpool.log
-
 SHUTDOWN_MODE=smart
 
 # Options for pgpool

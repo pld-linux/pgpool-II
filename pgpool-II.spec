@@ -1,7 +1,4 @@
 #
-# TODO
-# - logrotate script (note not needed under systemd: logs go to journal)
-#
 %bcond_without	openssl	# build without SSL support
 %bcond_without	pam	# don't build with pam support
 #
@@ -21,6 +18,7 @@ Source2:	%{relname}.monitrc
 Source3:	%{relname}.sysconfig
 Source4:	%{relname}.tmpfiles
 Source5:	%{relname}.service
+Patch0:		config.patch
 URL:		http://www.pgpool.net/
 %{?with_openssl:BuildRequires:	openssl-devel}
 %{?with_pam:BuildRequires:	pam-devel}
@@ -110,6 +108,7 @@ Plik monitrc do monitorowania pgpool.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %{__libtoolize}

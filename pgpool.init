@@ -19,7 +19,6 @@ PGPOOLUID=pgpool
 PGPOOLGID=pgpool
 PGPOOLCONF=/etc/pgpool.conf
 PGPOOLHBA=/etc/pool_hba.conf
-PGPOOLLOG=/var/log/pgpool.log
 SHUTDOWN_MODE=smart
 
 # Get service config
@@ -35,10 +34,6 @@ else
 	exit 0
 fi
 
-if [ ! -f $PGPOOLLOG ]; then
-	touch $PGPOOLLOG
-fi
-
 
 start() {
 	# Check if the service is already running?
@@ -46,7 +41,7 @@ start() {
 		msg_starting pgpool
 		busy
 		start-stop-daemon -S -x $PGPOOL_BIN -c $PGPOOLUID:$PGPOOLGID -p /var/run/pgpool/pgpool.pid \
-			-- -f $PGPOOLCONF -a $PGPOOLHBA $OPTS >> $PGPOOLLOG 2>&1
+			-- -f $PGPOOLCONF -a $PGPOOLHBA $OPTS
 		RETVAL=$?
 		if [ $RETVAL -eq 0 ]; then
 			touch /var/lock/subsys/pgpool
@@ -85,7 +80,7 @@ reload() {
 	if [ -f /var/lock/subsys/pgpool ]; then
 		msg_reloading pgpool
 		busy
-		$PGPOOL_BIN -f $PGPOOLCONF reload >> $PGPOOLLOG 2>&1
+		$PGPOOL_BIN -f $PGPOOLCONF reload
 		if [ $? -eq 0 ]; then
 			ok
 		else

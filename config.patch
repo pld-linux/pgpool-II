@@ -1,0 +1,12 @@
+diff -dur pgpool-II-3.6.0.orig/src/sample/pgpool.conf.sample pgpool-II-3.6.0/src/sample/pgpool.conf.sample
+--- pgpool-II-3.6.0.orig/src/sample/pgpool.conf.sample	2016-11-21 09:30:15.000000000 +0100
++++ pgpool-II-3.6.0/src/sample/pgpool.conf.sample	2016-11-30 12:17:42.000000000 +0100
+@@ -145,7 +145,7 @@
+ 
+ # - Where to log -
+ 
+-log_destination = 'stderr'
++log_destination = 'syslog'
+                                    # Where to log
+                                    # Valid values are combinations of stderr,
+                                    # and syslog. Default to stderr.
