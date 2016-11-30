@@ -1,1 +1,1 @@
-d /var/run/pgpool 0750 root pgpool -
+d /var/run/pgpool 0775 root pgpool -
