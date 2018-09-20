@@ -7,12 +7,12 @@
 Summary:	Pgpool - a connection pooling/replication server for PostgreSQL
 Summary(pl.UTF-8):	Pgpool - serwer puli połączeń i replikacji dla PostgreSQL-a
 Name:		pgpool-II
-Version:	3.6.0
-Release:	3
+Version:	3.7.5
+Release:	1
 License:	BSD
 Group:		Applications/Databases
 Source0:	http://www.pgpool.net/mediawiki/images/%{name}-%{version}.tar.gz
-# Source0-md5:	26f0e249067d150f01a9ca02804700eb
+# Source0-md5:	790ddb299b68405c5dd8db924e01b6c7
 Source1:	%{relname}.init
 Source2:	%{relname}.monitrc
 Source3:	%{relname}.sysconfig
