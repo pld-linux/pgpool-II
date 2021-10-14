@@ -7,12 +7,12 @@
 Summary:	Pgpool - a connection pooling/replication server for PostgreSQL
 Summary(pl.UTF-8):	Pgpool - serwer puli połączeń i replikacji dla PostgreSQL-a
 Name:		pgpool-II
-Version:	3.7.5
+Version:	4.2.5
 Release:	1
 License:	BSD
 Group:		Applications/Databases
 Source0:	http://www.pgpool.net/mediawiki/images/%{name}-%{version}.tar.gz
-# Source0-md5:	790ddb299b68405c5dd8db924e01b6c7
+# Source0-md5:	45ff448dbd4ac9ce4ac414005a722fdf
 Source1:	%{relname}.init
 Source2:	%{relname}.monitrc
 Source3:	%{relname}.sysconfig
@@ -110,6 +110,10 @@ Plik monitrc do monitorowania pgpool.
 %setup -q
 %patch0 -p1
 
+%{__sed} -E -i -e '1s,#!\s*/usr/bin/env\s+bash(\s|$),#!/bin/bash\1,' \
+	src/test/watchdog_setup.in \
+	src/test/pgpool_setup.in
+
 %build
 %{__libtoolize}
 %{__aclocal}
@@ -132,7 +136,7 @@ export CFLAGS CXXFLAGS
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},%{_varrun}/pgpool,%{systemdtmpfilesdir},%{_mandir}/man{1,8},/var/log/pgpool,%{systemdunitdir}}
+install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{_sysconfdir}/{sysconfig,monit,pam.d},/var/run/pgpool,%{systemdtmpfilesdir},%{_mandir}/man{1,8},/var/log/pgpool,%{systemdunitdir}}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -195,6 +199,7 @@ fi
 %attr(755,root,root) %{_bindir}/pcp_*
 %attr(755,root,root) %{_bindir}/pg*
 %attr(755,root,root) %{_bindir}/watchdog_setup
+%attr(755,root,root) %{_bindir}/wd_cli
 %attr(754,root,root) /etc/rc.d/init.d/%{relname}
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pcp.conf
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pgpool.conf
@@ -204,7 +209,7 @@ fi
 %{_mandir}/man1/*.1*
 %{_mandir}/man8/pgpool.8*
 %{_datadir}/%{name}
-%dir %attr(775,root,pgpool) %{_varrun}/pgpool
+%dir %attr(775,root,pgpool) /var/run/pgpool
 %{systemdtmpfilesdir}/%{relname}.conf
 %{systemdunitdir}/%{relname}.service
 %if %{with pam}
@@ -214,8 +219,8 @@ fi
 
 %files libs
 %defattr(644,root,root,755)
-%ghost %attr(755,root,root) %{_libdir}/libpcp.so.1
-%attr(755,root,root) %{_libdir}/libpcp.so.1.*
+%ghost %attr(755,root,root) %{_libdir}/libpcp.so.2
+%attr(755,root,root) %{_libdir}/libpcp.so.2.*
 
 %files devel
 %defattr(644,root,root,755)
