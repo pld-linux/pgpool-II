@@ -7,19 +7,19 @@
 Summary:	Pgpool - a connection pooling/replication server for PostgreSQL
 Summary(pl.UTF-8):	Pgpool - serwer puli połączeń i replikacji dla PostgreSQL-a
 Name:		pgpool-II
-Version:	4.2.5
-Release:	3
+Version:	4.2.16
+Release:	1
 License:	BSD
 Group:		Applications/Databases
-Source0:	http://www.pgpool.net/mediawiki/images/%{name}-%{version}.tar.gz
-# Source0-md5:	45ff448dbd4ac9ce4ac414005a722fdf
+Source0:	https://www.pgpool.net/mediawiki/images/%{name}-%{version}.tar.gz
+# Source0-md5:	568f914f62b6887c17e04d4dd2e7cf48
 Source1:	%{relname}.init
 Source2:	%{relname}.monitrc
 Source3:	%{relname}.sysconfig
 Source4:	%{relname}.tmpfiles
 Source5:	%{relname}.service
 Patch0:		config.patch
-URL:		http://www.pgpool.net/
+URL:		https://www.pgpool.net/
 %{?with_openssl:BuildRequires:	openssl-devel}
 %{?with_pam:BuildRequires:	pam-devel}
 BuildRequires:	postgresql-devel
@@ -39,7 +39,7 @@ Requires:	systemd-units >= 38
 Provides:	group(pgpool)
 Provides:	pgpool
 Provides:	user(pgpool)
-Obsoletes:	pgpool
+Obsoletes:	pgpool < 4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -98,7 +98,7 @@ Summary(pl.UTF-8):	Wsparcie pgpool dla monit
 Group:		Applications/System
 Requires:	%{name}
 Requires:	monit
-Obsoletes:	monit-rc-pgpool
+Obsoletes:	monit-rc-pgpool < 4
 
 %description -n monit-rc-pgpool-II
 monitrc file for pgpool monitoring.
