@@ -108,7 +108,7 @@ Plik monitrc do monitorowania pgpool.
 
 %prep
 %setup -q
-%patch0 -p1
+%patch -P0 -p1
 
 %{__sed} -E -i -e '1s,#!\s*/usr/bin/env\s+bash(\s|$),#!/bin/bash\1,' \
 	src/test/watchdog_setup.in \
